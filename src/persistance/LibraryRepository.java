@@ -17,6 +17,7 @@ public class LibraryRepository {
                     return new User(
                             rs.getInt("id"),
                             rs.getString("username"),
+                            rs.getString("email"),
                             rs.getString("password"),
                             rs.getString("role")
                     );
@@ -51,7 +52,7 @@ public class LibraryRepository {
 
     //-------3 . ACTION ADMIN (AJOUTER)---
     public void addBook(String title, String author) throws SQLException, ClassNotFoundException {
-        String sql = "insert into books (title,author) values (?,?,TRUE)";
+        String sql = "insert into books (title,author,available) values (?,?,TRUE)";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement psmt = conn.prepareStatement(sql)) {
             psmt.setString(1, title);
@@ -62,17 +63,29 @@ public class LibraryRepository {
 
     //-----------4 . GESTION DES LOANS---
     public void addLoan(int userId, int bookId) throws SQLException, ClassNotFoundException {
-        String sql = "insert into loans (user_id,book_id,loan_date,due_date)" + "values (?,?,CURDATE(),DATE_ADD(CURDATE(),INTERVAL 15 DAY))";
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement psmt = conn.prepareStatement(sql)) {
-            psmt.setInt(1, userId);
-            psmt.setInt(2, bookId);
-            psmt.executeUpdate();
+        String sqlLoan = "INSERT INTO loans (user_id, book_id, loan_date, due_date) VALUES (?, ?, CURDATE(), DATE_ADD(CURDATE(), INTERVAL 15 DAY))";
+        String sqlUpdateBook = "UPDATE books SET available = false WHERE id = ?";
+
+        // On ouvre UNE SEULE connexion pour les deux opérations
+        try (Connection conn = DatabaseConnection.getConnection()) {
+
+            // 1. Insertion du prêt
+            try (PreparedStatement psmtLoan = conn.prepareStatement(sqlLoan)) {
+                psmtLoan.setInt(1, userId);
+                psmtLoan.setInt(2, bookId);
+                psmtLoan.executeUpdate();
+            }
+
+            // 2. Mise à jour de la disponibilité du livre
+            try (PreparedStatement psmtUpdate = conn.prepareStatement(sqlUpdateBook)) {
+                psmtUpdate.setInt(1, bookId);
+                psmtUpdate.executeUpdate();
+            }
         }
     }
 //----------5. METHODE SECOURS ------
     public Book findBookById(int bookId) throws SQLException, ClassNotFoundException {
-        String sql = "select * from books where book_id = ?";
+        String sql = "select * from books where id = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement psmt = conn.prepareStatement(sql)) {
             psmt.setInt(1, bookId);
@@ -107,6 +120,37 @@ public class LibraryRepository {
         }
         return activeloans;
     }
+//-----------------7.RETOUR DES LOANS
+public void returnLoan(int loanId) throws SQLException, ClassNotFoundException {
+
+        int bookId = -1;
+        String getLoanSql="SELECT book_id FROM loans WHERE id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+        PreparedStatement pstmt = conn.prepareStatement(getLoanSql)) {
+            pstmt.setInt(1, loanId);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    bookId = rs.getInt("book_id");
+                }
+                else {
+                    throw new IllegalArgumentException("Loan not found");
+                }
+            }
+        }
+        String returnSql ="UPDATE loans SET return_date = CURDATE() WHERE id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+        PreparedStatement pstmt = conn.prepareStatement(returnSql)) {
+            pstmt.setInt(1, loanId);
+            pstmt.executeUpdate();
+        }
+        String availableSql ="UPDATE books SET available = true WHERE id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(availableSql)){
+            pstmt.setInt(1, bookId);
+            pstmt.executeUpdate();
+        }
+}
+
 }
 
 

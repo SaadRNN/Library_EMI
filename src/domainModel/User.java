@@ -53,12 +53,16 @@ public void setPassword(String password) {
     public Role getRole() {return this.role;}
     public void setRole(Role role) {this.role = role;}
 //CONSTRUCTOR//
-public User(int id, String username, String email, String password) {
+public User(int id, String username, String email, String password,String role) {
     setId(id);
     setUsername(username);
     setEmail(email);
     setPassword(password);
-    this.role=Role.USER;
+    try {
+        this.role = Role.valueOf(role.toUpperCase());
+    } catch (IllegalArgumentException |NullPointerException e) {
+        this.role=Role.USER;
+    }
 }
 
 }

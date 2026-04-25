@@ -8,9 +8,14 @@ import java.util.List;
 public class UserManager {
     private LibraryRepository repository;
     private static final int MAX_LOANS=3;
+
+    public LibraryRepository getRepository() {return repository;}
+    public void setRepository(LibraryRepository repository) {this.repository = repository;}
+
     public UserManager(LibraryRepository repository) {
         this.repository = repository;
     }
+
     public User validateUserCredentials(String Username, String Password) throws SQLException, ClassNotFoundException {
         if (Username ==null || Username.isBlank()){
             throw new IllegalArgumentException("Username is either null or blank");
@@ -24,6 +29,7 @@ public class UserManager {
         }
         return user;
     }
+
     public boolean canBorrow(User user) throws SQLException, ClassNotFoundException {
         List<Loan> activeLoans = repository.getActiveLoansByUser(user.getId());
         if (activeLoans.size() >= MAX_LOANS) {
