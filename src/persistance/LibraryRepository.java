@@ -151,6 +151,18 @@ public void returnLoan(int loanId) throws SQLException, ClassNotFoundException {
         }
 }
 
+//---------8. CRÉATION D'UN NOUVEL UTILISATEUR (INSCRIPTION)-------
+public void createUser(String username, String email, String password) 
+    throws SQLException, ClassNotFoundException {
+    String sql = "INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, 'USER')";
+    try (Connection conn = DatabaseConnection.getConnection();
+         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        pstmt.setString(1, username);
+        pstmt.setString(2, email);
+        pstmt.setString(3, password);
+        pstmt.executeUpdate();
+    }
+}
 }
 
 

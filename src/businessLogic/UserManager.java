@@ -44,4 +44,21 @@ public class UserManager {
         }
         return true;
     }
+    public void registerUser(String username, String email, String password) 
+    	       throws SQLException, ClassNotFoundException {
+    	       
+    	       // Validation
+    	       if (username == null || username.isBlank()) {
+    	           throw new IllegalArgumentException("Username requis");
+    	       }
+    	       if (email == null || email.isBlank()) {
+    	           throw new IllegalArgumentException("Email requis");
+    	       }
+    	       if (password == null || password.isBlank()) {
+    	           throw new IllegalArgumentException("Password requis");
+    	       }
+    	       
+    	       // Appel au repository
+    	       repository.createUser(username, email, password);
+    	   }
 }
