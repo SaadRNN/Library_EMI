@@ -79,38 +79,34 @@
                                 <VBox spacing="5.0">
                                     <children>
                                         <Label text="Prénom" textFill="#64748b" />
-                                        <TextField prefHeight="40.0" style="-fx-background-color: #F1F5F9; -fx-background-radius: 8;" />
+   										<TextField fx:id="firstNameField" prefHeight="40.0" style="-fx-background-color: #F1F5F9; -fx-background-radius: 8;" />
+
                                     </children>
                                 </VBox>
                                 <VBox spacing="5.0" GridPane.columnIndex="1">
                                     <children>
-                                        <Label text="Nom" textFill="#64748b" />
-                                        <TextField prefHeight="40.0" style="-fx-background-color: #F1F5F9; -fx-background-radius: 8;" />
+<TextField fx:id="lastNameField" prefHeight="40.0" style="-fx-background-color: #F1F5F9; -fx-background-radius: 8;" />                                        <TextField prefHeight="40.0" style="-fx-background-color: #F1F5F9; -fx-background-radius: 8;" />
                                     </children>
                                 </VBox>
                                 <VBox spacing="5.0" GridPane.columnSpan="2" GridPane.rowIndex="1">
                                     <children>
                                         <Label text="Email académique (@Student.emi.ac.ma)" textFill="#64748b" />
-                                        <TextField prefHeight="40.0" style="-fx-background-color: #F1F5F9; -fx-background-radius: 8;" />
-                                    </children>
+<TextField fx:id="emailField" prefHeight="40.0" style="-fx-background-color: #F1F5F9; -fx-background-radius: 8;" />                                    </children>
                                 </VBox>
                                 <VBox spacing="5.0" GridPane.rowIndex="2">
                                     <children>
                                         <Label text="Mot de passe" textFill="#64748b" />
-                                        <PasswordField prefHeight="40.0" style="-fx-background-color: #F1F5F9; -fx-background-radius: 8;" />
-                                    </children>
+<PasswordField fx:id="passwordField" prefHeight="40.0" style="-fx-background-color: #F1F5F9; -fx-background-radius: 8;" />                                    </children>
                                 </VBox>
                                 <VBox spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
                                     <children>
                                         <Label text="Confirmation" textFill="#64748b" />
-                                        <PasswordField prefHeight="40.0" style="-fx-background-color: #F1F5F9; -fx-background-radius: 8;" />
-                                    </children>
+<PasswordField fx:id="confirmPasswordField" prefHeight="40.0" style="-fx-background-color: #F1F5F9; -fx-background-radius: 8;" />                                    </children>
                                 </VBox>
                             </children>
                         </GridPane>
 
-                        <Button fx:id="signUpButton" mnemonicParsing="false" prefHeight="45.0" prefWidth="430.0" style="-fx-background-color: #007AFF; -fx-text-fill: white; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-weight: bold;" text="Créer mon compte">
-                            <VBox.margin>
+<Button fx:id="signUpButton" onAction="#handleSignUp" mnemonicParsing="false" prefHeight="45.0" prefWidth="430.0" style="-fx-background-color: #007AFF; -fx-text-fill: white; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-weight: bold;" text="Créer mon compte">                            <VBox.margin>
                                 <Insets top="10.0" />
                             </VBox.margin>
                             <effect>
