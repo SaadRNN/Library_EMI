@@ -33,20 +33,17 @@ public class SignUpController {
         String mdp = passwordField.getText();
         String confirmation = confirmPasswordField.getText();
 
-        // Validation des champs vides
         if (nom.isEmpty() || prenom.isEmpty() || email.isEmpty() || mdp.isEmpty()) {
             showAlert(Alert.AlertType.ERROR, "Champs vides", "Veuillez remplir tous les champs.");
             return;
         }
 
-        // Validation mot de passe
         if (!mdp.equals(confirmation)) {
             showAlert(Alert.AlertType.ERROR, "Erreur", "Les mots de passe ne sont pas identiques.");
             return;
         }
 
         try {
-            // ✅ Sauvegarde en base avec le username = prenom + nom
             repository.addUser(prenom + " " + nom, email, mdp);
             showAlert(Alert.AlertType.INFORMATION, "Succès", "Inscription réussie pour " + prenom + " !");
             switchToLogin(event);

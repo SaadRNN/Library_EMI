@@ -12,8 +12,9 @@ public class User {
     private Role role;
 
     //PATTERN_OF_MATCH//
-    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9+_.-]+@(gmail|hotmail|outlook|yahoo)\\.(com|fr)$");
-    private static final Pattern PASSWORD_PATTERN = Pattern.compile("^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%^&*()_+\\-={}\\[\\]:;\"'?/<>,.]).{8,}$");
+    private static final Pattern EMAIL_PATTERN = Pattern.compile(
+            "^[A-Za-z0-9+_.-]+@(gmail|hotmail|outlook|yahoo|student\\.emi\\.ac|emi\\.ac)\\.(com|fr|ma)$"
+    );    private static final Pattern PASSWORD_PATTERN = Pattern.compile("^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%^&*()_+\\-={}\\[\\]:;\"'?/<>,.]).{8,}$");
 //ID//
 public int getId() {return id;}
 public void setId(int id) {
