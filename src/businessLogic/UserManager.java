@@ -23,12 +23,9 @@ public class UserManager {
         if (Password ==null || Password.isBlank()){
             throw new IllegalArgumentException("Password is either null or blank");
         }
-        User user=repository.findUser(Username,Password);
-        if(user==null){
-            throw new SQLException("Invalid username or password");
+       return repository.findUser(Username, Password);
         }
-        return user;
-    }
+
 
     public boolean canBorrow(User user) throws SQLException, ClassNotFoundException {
         List<Loan> activeLoans = repository.getActiveLoansByUser(user.getId());
@@ -48,5 +45,18 @@ public class UserManager {
             throws SQLException, ClassNotFoundException {
 
         return repository.getAllUsers();
+    }
+    public void deleteUser(User currentUser, int targetUserId) throws SQLException, ClassNotFoundException {
+        if (currentUser.getRole() != User.Role.ADMIN) {
+            throw new SecurityException("You are not allowed to delete users !");
+        }
+        repository.deleteUser(targetUserId);
+    }
+
+    public void changerUserRole(User currentUser, int targetUserId, User.Role newRole) throws SQLException, ClassNotFoundException {
+        if (currentUser.getRole() != User.Role.ADMIN) {
+            throw new SecurityException("Seul un admin peut changer les rôles !");
+        }
+        repository.updateUserRole(targetUserId, newRole);
     }
 }

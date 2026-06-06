@@ -14,7 +14,7 @@ public BookManager(LibraryRepository repository) {
     this.repository = repository;
 }
 
-public List<Book> getAllBooks() throws SQLException {
+public List<Book> getAllBooks() throws SQLException , ClassNotFoundException {
     return repository.getAllBooks();
 }
 public void addBook(User currentUser, String title, String author) throws SQLException, ClassNotFoundException {
@@ -30,4 +30,11 @@ public Book findBookById(int id) throws SQLException, ClassNotFoundException {
     if (book == null) throw new IllegalArgumentException("Book with id " + id + " not found !");
     return book;
 }
+public void deleteBook(User currentUser, int bookId) throws SQLException, ClassNotFoundException {
+    if (currentUser.getRole() != User.Role.ADMIN) {
+        throw new SecurityException("You are not allowed to delete books !");
+    }
+    repository.deleteBook(bookId);
 }
+}
+

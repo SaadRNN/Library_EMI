@@ -308,6 +308,15 @@ public class LibraryRepository {
             pstmt.executeUpdate();
         }
     }
+    public void updateUserRole(int userId, User.Role newRole) throws SQLException, ClassNotFoundException {
+        String sql = "UPDATE users SET role = ? WHERE id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, newRole.name());
+            pstmt.setInt(2, userId);
+            pstmt.executeUpdate();
+        }
+    }
 }
 
 

@@ -32,5 +32,10 @@ public void returnBook(int loanId) throws SQLException, ClassNotFoundException {
 public List<Loan> getActiveLoans(User user) throws SQLException, ClassNotFoundException {
     return repository.getActiveLoansByUser(user.getId());
 }
-
+    public List<Loan> getAllLoans(User currentUser) throws SQLException, ClassNotFoundException {
+        if (currentUser.getRole() != User.Role.ADMIN) {
+            throw new SecurityException("You are not allowed to view all loans !");
+        }
+        return repository.getAllLoans();
+    }
 }
