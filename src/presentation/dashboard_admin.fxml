@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<HBox prefHeight="600.0" prefWidth="960.0" xmlns="http://javafx.com/javafx/17.0.12"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="controllers.DashboardAdminController">
+
+    <!-- ===== SIDEBAR ADMIN ===== -->
+    <VBox prefHeight="600.0" prefWidth="200.0" style="-fx-background-color: #1a252f;">
+        <VBox style="-fx-border-color: rgba(255,255,255,0.08); -fx-border-width: 0 0 1 0;" spacing="2.0">
+            <padding><Insets bottom="16" left="18" right="18" top="18"/></padding>
+            <Label text="EMIBook" textFill="WHITE"><font><Font name="System Bold" size="20.0"/></font></Label>
+            <Label text="MANAGEMENT V2.0" textFill="#007AFF"><font><Font name="System Bold" size="8.0"/></font></Label>
+        </VBox>
+        <VBox VBox.vgrow="ALWAYS" spacing="0">
+            <padding><Insets top="12"/></padding>
+
+            <Label text="MENU" textFill="#4a5568"><font><Font name="System Bold" size="9.0"/></font><padding><Insets bottom="4" left="18" top="12"/></padding></Label>
+            <Button fx:id="btnDashboard" mnemonicParsing="false" onAction="#showDashboard" prefHeight="38.0" prefWidth="200.0" text="  Tableau de bord" style="-fx-background-color: rgba(0,122,255,0.12); -fx-text-fill: white; -fx-alignment: CENTER_LEFT; -fx-border-color: #007AFF transparent transparent transparent; -fx-border-width: 0 0 0 3; -fx-cursor: hand; -fx-font-size: 12;"/>
+            <Button fx:id="btnCatalogue" mnemonicParsing="false" onAction="#showCatalogue" prefHeight="38.0" prefWidth="200.0" text="  Catalogue" style="-fx-background-color: transparent; -fx-text-fill: #7f8c8d; -fx-alignment: CENTER_LEFT; -fx-cursor: hand; -fx-font-size: 12;"/>
+
+            <Label text="ADMINISTRATION" textFill="#4a5568"><font><Font name="System Bold" size="9.0"/></font><padding><Insets bottom="4" left="18" top="16"/></padding></Label>
+            <Button fx:id="btnAjouterLivre" mnemonicParsing="false" onAction="#showAjouterLivre" prefHeight="38.0" prefWidth="200.0" text="  Ajouter un livre" style="-fx-background-color: transparent; -fx-text-fill: #7f8c8d; -fx-alignment: CENTER_LEFT; -fx-cursor: hand; -fx-font-size: 12;"/>
+            <Button fx:id="btnGestionUsers" mnemonicParsing="false" onAction="#showGestionUsers" prefHeight="38.0" prefWidth="200.0" text="  Gestion utilisateurs" style="-fx-background-color: transparent; -fx-text-fill: #7f8c8d; -fx-alignment: CENTER_LEFT; -fx-cursor: hand; -fx-font-size: 12;"/>
+        </VBox>
+        <VBox spacing="8.0" style="-fx-border-color: rgba(255,255,255,0.08); -fx-border-width: 1 0 0 0;">
+            <padding><Insets bottom="16" left="18" right="18" top="14"/></padding>
+            <HBox alignment="CENTER_LEFT" spacing="10.0">
+                <Label fx:id="avatarLabel" prefHeight="32.0" prefWidth="32.0" text="AD" textFill="WHITE" style="-fx-background-color: #243447; -fx-background-radius: 50; -fx-alignment: CENTER; -fx-font-size: 11; -fx-font-weight: bold;"/>
+                <VBox spacing="2.0">
+                    <Label fx:id="sidebarUsername" text="Admin" textFill="WHITE"><font><Font size="11.0"/></font></Label>
+                    <Label text="Administrateur" textFill="#007AFF"><font><Font name="System Bold" size="10.0"/></font></Label>
+                </VBox>
+            </HBox>
+            <Button mnemonicParsing="false" onAction="#handleLogout" prefHeight="30.0" prefWidth="164.0" text="Se déconnecter" style="-fx-background-color: transparent; -fx-text-fill: #7f8c8d; -fx-border-color: rgba(255,255,255,0.15); -fx-border-radius: 6; -fx-background-radius: 6; -fx-cursor: hand; -fx-font-size: 11;"/>
+        </VBox>
+    </VBox>
+
+    <!-- ===== MAIN ===== -->
+    <VBox HBox.hgrow="ALWAYS" style="-fx-background-color: #F8FAFC;">
+        <!-- Topbar -->
+        <HBox alignment="CENTER_LEFT" prefHeight="48.0" spacing="12.0" style="-fx-background-color: white; -fx-border-color: #e2e8f0; -fx-border-width: 0 0 1 0;">
+            <padding><Insets left="24" right="24"/></padding>
+            <Label fx:id="pageTitle" text="Tableau de bord" textFill="#243447"><font><Font name="System Bold" size="15.0"/></font></Label>
+            <Region HBox.hgrow="ALWAYS"/>
+            <TextField fx:id="searchField" prefHeight="34.0" prefWidth="200.0" promptText="Rechercher un livre..." style="-fx-background-color: #F1F5F9; -fx-border-color: transparent; -fx-background-radius: 8; -fx-padding: 0 10 0 10; -fx-font-size: 12;" onAction="#handleSearch"/>
+            <Button mnemonicParsing="false" onAction="#handleSearch" prefHeight="34.0" text="Chercher" style="-fx-background-color: #007AFF; -fx-text-fill: white; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-size: 12; -fx-font-weight: bold;"/>
+        </HBox>
+
+        <StackPane VBox.vgrow="ALWAYS">
+
+            <!-- PAGE DASHBOARD ADMIN -->
+            <ScrollPane fx:id="paneDashboard" fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent;">
+                <VBox spacing="16.0"><padding><Insets bottom="20" left="24" right="24" top="20"/></padding>
+                    <HBox spacing="12.0">
+                        <VBox prefWidth="155.0" spacing="4.0" style="-fx-background-color: white; -fx-background-radius: 8; -fx-border-color: #e2e8f0; -fx-border-radius: 8; -fx-border-width: 0.5;"><padding><Insets bottom="12" left="14" right="14" top="12"/></padding>
+                            <Label text="TOTAL LIVRES" textFill="#94a3b8"><font><Font name="System Bold" size="10.0"/></font></Label>
+                            <Label fx:id="statTotalLivres" text="—" textFill="#243447"><font><Font name="System Bold" size="22.0"/></font></Label>
+                        </VBox>
+                        <VBox prefWidth="155.0" spacing="4.0" style="-fx-background-color: white; -fx-background-radius: 8; -fx-border-color: #e2e8f0; -fx-border-radius: 8; -fx-border-width: 0.5;"><padding><Insets bottom="12" left="14" right="14" top="12"/></padding>
+                            <Label text="DISPONIBLES" textFill="#94a3b8"><font><Font name="System Bold" size="10.0"/></font></Label>
+                            <Label fx:id="statDisponibles" text="—" textFill="#243447"><font><Font name="System Bold" size="22.0"/></font></Label>
+                        </VBox>
+                        <VBox prefWidth="155.0" spacing="4.0" style="-fx-background-color: white; -fx-background-radius: 8; -fx-border-color: #e2e8f0; -fx-border-radius: 8; -fx-border-width: 0.5;"><padding><Insets bottom="12" left="14" right="14" top="12"/></padding>
+                            <Label text="EMPRUNTS ACTIFS" textFill="#94a3b8"><font><Font name="System Bold" size="10.0"/></font></Label>
+                            <Label fx:id="statEmpruntsActifs" text="—" textFill="#243447"><font><Font name="System Bold" size="22.0"/></font></Label>
+                        </VBox>
+                        <VBox prefWidth="155.0" spacing="4.0" style="-fx-background-color: white; -fx-background-radius: 8; -fx-border-color: #e2e8f0; -fx-border-radius: 8; -fx-border-width: 0.5;"><padding><Insets bottom="12" left="14" right="14" top="12"/></padding>
+                            <Label text="UTILISATEURS" textFill="#94a3b8"><font><Font name="System Bold" size="10.0"/></font></Label>
+                            <Label fx:id="statUsers" text="—" textFill="#243447"><font><Font name="System Bold" size="22.0"/></font></Label>
+                        </VBox>
+                    </HBox>
+                    <HBox spacing="14.0">
+                        <VBox HBox.hgrow="ALWAYS" spacing="10.0" style="-fx-background-color: white; -fx-background-radius: 8; -fx-border-color: #e2e8f0; -fx-border-radius: 8; -fx-border-width: 0.5;"><padding><Insets bottom="14" left="14" right="14" top="14"/></padding>
+                            <Label text="Catalogue des livres" textFill="#243447"><font><Font name="System Bold" size="13.0"/></font></Label>
+                            <ListView fx:id="listLivres" prefHeight="200.0" style="-fx-background-color: transparent; -fx-border-color: transparent;"/>
+                            <Button mnemonicParsing="false" onAction="#showAjouterLivre" prefHeight="34.0" prefWidth="350.0" text="+ Ajouter un nouveau livre" style="-fx-background-color: #007AFF; -fx-text-fill: white; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-size: 12; -fx-font-weight: bold;"/>
+                        </VBox>
+                        <VBox prefWidth="280.0" spacing="10.0" style="-fx-background-color: white; -fx-background-radius: 8; -fx-border-color: #e2e8f0; -fx-border-radius: 8; -fx-border-width: 0.5;"><padding><Insets bottom="14" left="14" right="14" top="14"/></padding>
+                            <Label text="Accès rapide admin" textFill="#243447"><font><Font name="System Bold" size="13.0"/></font></Label>
+                            <Button mnemonicParsing="false" onAction="#showAjouterLivre" prefHeight="40.0" prefWidth="252.0" text="Gérer le catalogue" style="-fx-background-color: #243447; -fx-text-fill: white; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-size: 12; -fx-font-weight: bold;"/>
+                            <Button mnemonicParsing="false" onAction="#showGestionUsers" prefHeight="40.0" prefWidth="252.0" text="Gérer les utilisateurs" style="-fx-background-color: #243447; -fx-text-fill: white; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-size: 12; -fx-font-weight: bold;"/>
+                            <Button mnemonicParsing="false" onAction="#showCatalogue" prefHeight="40.0" prefWidth="252.0" text="Voir tout le catalogue" style="-fx-background-color: transparent; -fx-text-fill: #243447; -fx-border-color: #e2e8f0; -fx-border-radius: 8; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-size: 12;"/>
+                        </VBox>
+                    </HBox>
+                </VBox>
+            </ScrollPane>
+
+            <!-- PAGE CATALOGUE ADMIN -->
+            <ScrollPane fx:id="paneCatalogue" fitToWidth="true" visible="false" style="-fx-background-color: transparent; -fx-background: transparent;">
+                <VBox spacing="12.0"><padding><Insets bottom="20" left="24" right="24" top="20"/></padding>
+                    <VBox style="-fx-background-color: white; -fx-background-radius: 8; -fx-border-color: #e2e8f0; -fx-border-radius: 8; -fx-border-width: 0.5;"><padding><Insets bottom="16" left="16" right="16" top="16"/></padding>
+                        <TableView fx:id="tableCatalogue" prefHeight="460.0">
+                            <columns>
+                                <TableColumn fx:id="colId" prefWidth="50.0" text="ID"/>
+                                <TableColumn fx:id="colTitre" prefWidth="200.0" text="TITRE"/>
+                                <TableColumn fx:id="colAuteur" prefWidth="140.0" text="AUTEUR"/>
+                                <TableColumn fx:id="colDispo" prefWidth="110.0" text="DISPONIBILITÉ"/>
+                            </columns>
+                        </TableView>
+                    </VBox>
+                </VBox>
+            </ScrollPane>
+
+            <!-- PAGE AJOUTER LIVRE -->
+            <ScrollPane fx:id="paneAjouterLivre" fitToWidth="true" visible="false" style="-fx-background-color: transparent; -fx-background: transparent;">
+                <VBox spacing="16.0"><padding><Insets bottom="20" left="24" right="24" top="20"/></padding>
+                    <HBox spacing="16.0">
+                        <!-- Formulaire ajout -->
+                        <VBox prefWidth="340.0" spacing="14.0" style="-fx-background-color: white; -fx-background-radius: 8; -fx-border-color: #e2e8f0; -fx-border-radius: 8; -fx-border-width: 0.5;"><padding><Insets bottom="20" left="20" right="20" top="20"/></padding>
+                            <Label text="Ajouter un livre" textFill="#243447"><font><Font name="System Bold" size="15.0"/></font></Label>
+                            <Label text="Le livre sera ajouté comme disponible." textFill="#94a3b8"><font><Font size="12.0"/></font></Label>
+                            <VBox spacing="6.0">
+                                <Label text="Titre du livre" textFill="#64748b"><font><Font name="System Bold" size="12.0"/></font></Label>
+                                <TextField fx:id="fieldTitre" prefHeight="40.0" promptText="Ex: Génie Logiciel" style="-fx-background-color: #F1F5F9; -fx-border-color: transparent; -fx-background-radius: 8; -fx-padding: 0 12 0 12; -fx-font-size: 13;"/>
+                            </VBox>
+                            <VBox spacing="6.0">
+                                <Label text="Auteur" textFill="#64748b"><font><Font name="System Bold" size="12.0"/></font></Label>
+                                <TextField fx:id="fieldAuteur" prefHeight="40.0" promptText="Ex: Ian Sommerville" style="-fx-background-color: #F1F5F9; -fx-border-color: transparent; -fx-background-radius: 8; -fx-padding: 0 12 0 12; -fx-font-size: 13;"/>
+                            </VBox>
+                            <Button mnemonicParsing="false" onAction="#handleAjouterLivre" prefHeight="44.0" prefWidth="300.0" text="Ajouter au catalogue" style="-fx-background-color: #007AFF; -fx-text-fill: white; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-size: 13; -fx-font-weight: bold;"><VBox.margin><Insets top="6"/></VBox.margin></Button>
+                        </VBox>
+
+                        <!-- Liste livres -->
+                        <VBox HBox.hgrow="ALWAYS" spacing="10.0" style="-fx-background-color: white; -fx-background-radius: 8; -fx-border-color: #e2e8f0; -fx-border-radius: 8; -fx-border-width: 0.5;"><padding><Insets bottom="16" left="16" right="16" top="16"/></padding>
+                            <Label text="Catalogue actuel" textFill="#243447"><font><Font name="System Bold" size="13.0"/></font></Label>
+                            <TableView fx:id="tableAdmin" prefHeight="380.0">
+                                <columns>
+                                    <TableColumn fx:id="aColId" prefWidth="50.0" text="ID"/>
+                                    <TableColumn fx:id="aColTitre" prefWidth="180.0" text="TITRE"/>
+                                    <TableColumn fx:id="aColAuteur" prefWidth="130.0" text="AUTEUR"/>
+                                    <TableColumn fx:id="aColDispo" prefWidth="100.0" text="DISPO"/>
+                                </columns>
+                            </TableView>
+                        </VBox>
+                    </HBox>
+                </VBox>
+            </ScrollPane>
+
+            <!-- PAGE GESTION UTILISATEURS -->
+            <ScrollPane fx:id="paneGestionUsers" fitToWidth="true" visible="false" style="-fx-background-color: transparent; -fx-background: transparent;">
+                <VBox spacing="12.0"><padding><Insets bottom="20" left="24" right="24" top="20"/></padding>
+                    <VBox style="-fx-background-color: white; -fx-background-radius: 8; -fx-border-color: #e2e8f0; -fx-border-radius: 8; -fx-border-width: 0.5;"><padding><Insets bottom="16" left="16" right="16" top="16"/></padding>
+                        <HBox alignment="CENTER_LEFT"><padding><Insets bottom="12"/></padding>
+                            <Label text="Gestion des utilisateurs" textFill="#243447"><font><Font name="System Bold" size="13.0"/></font></Label>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Label text="ADMIN ONLY" textFill="white" style="-fx-background-color: #243447; -fx-background-radius: 20; -fx-padding: 3 10 3 10;"><font><Font name="System Bold" size="9.0"/></font></Label>
+                        </HBox>
+                        <TableView fx:id="tableUsers" prefHeight="420.0">
+                            <columns>
+                                <TableColumn fx:id="uColId" prefWidth="50.0" text="ID"/>
+                                <TableColumn fx:id="uColNom" prefWidth="160.0" text="NOM"/>
+                                <TableColumn fx:id="uColEmail" prefWidth="200.0" text="EMAIL"/>
+                                <TableColumn fx:id="uColRole" prefWidth="90.0" text="RÔLE"/>
+                                <TableColumn fx:id="uColAction" prefWidth="140.0" text="CHANGER RÔLE"/>
+                            </columns>
+                        </TableView>
+                    </VBox>
+                </VBox>
+            </ScrollPane>
+
+        </StackPane>
+    </VBox>
+</HBox>

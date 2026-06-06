@@ -31,18 +31,16 @@ public class Loan {
         this.id = id;
         this.user = user;
         this.book = book;
-        this.loanDate = LocalDate.now();
+        this.loanDate = loanDate;
         this.returnDate = returnDate;
-        this.dueDate = loanDate.plusDays(15);
-        book.setAvailable(false);
+        this.dueDate = dueDate;
 
     }
     // Dans ta classe Loan
     public boolean isOverdue() {
-        if (this.returnDate != null) {
-            return false;
-        }
-        return LocalDate.now().isAfter(this.dueDate);
+
+        LocalDate referenceDate = (returnDate != null) ? returnDate : LocalDate.now();
+        return referenceDate.isAfter(this.dueDate);
     }
 
 
@@ -55,11 +53,9 @@ public class Loan {
         // 2. On calcule le retard par rapport à la date limite (dueDate)
         // On compare aujourd'hui (ou la date de retour si elle existe) avec la dueDate
         LocalDate referenceDate = (returnDate != null) ? returnDate : LocalDate.now();
-
         long daysLate = ChronoUnit.DAYS.between(this.dueDate, referenceDate);
 
-        // 3. Si le résultat est positif, on multiplie par le tarif (ex: 15 DH par jour)
-        return (daysLate > 0) ? daysLate * 15.0f : 0.0f;
+        return daysLate > 0 ? daysLate * 15.0f : 0.0f;
     }
 
     public String toString() {

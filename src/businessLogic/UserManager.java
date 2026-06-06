@@ -44,4 +44,9 @@ public class UserManager {
         }
         return true;
     }
+    public List<User> getAllUsers()
+            throws SQLException, ClassNotFoundException {
+
+        return repository.getAllUsers();
+    }
 }

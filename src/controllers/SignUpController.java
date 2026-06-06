@@ -1,4 +1,4 @@
-package controllers; // Nouveau package
+package controllers;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -10,7 +10,10 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
+import persistance.LibraryRepository;
+
 import java.io.IOException;
+import java.sql.SQLException;
 
 public class SignUpController {
 
@@ -20,37 +23,46 @@ public class SignUpController {
     @FXML private PasswordField passwordField;
     @FXML private PasswordField confirmPasswordField;
 
+    private final LibraryRepository repository = new LibraryRepository();
+
     @FXML
     private void handleSignUp(ActionEvent event) {
-        // Extraction des données
         String nom = lastNameField.getText();
         String prenom = firstNameField.getText();
         String email = emailField.getText();
         String mdp = passwordField.getText();
         String confirmation = confirmPasswordField.getText();
 
-        // Validation rapide
-        if (email.isEmpty() || mdp.isEmpty() || nom.isEmpty()) {
-            showAlert("Champs vides", "Veuillez remplir tous les champs obligatoires.");
+        // Validation des champs vides
+        if (nom.isEmpty() || prenom.isEmpty() || email.isEmpty() || mdp.isEmpty()) {
+            showAlert(Alert.AlertType.ERROR, "Champs vides", "Veuillez remplir tous les champs.");
             return;
         }
 
+        // Validation mot de passe
         if (!mdp.equals(confirmation)) {
-            showAlert("Erreur Mot de Passe", "Les mots de passe ne sont pas identiques.");
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Les mots de passe ne sont pas identiques.");
             return;
         }
 
-        // Ici, vous ferez appel à votre package 'persistance' plus tard
-        System.out.println("Utilisateur prêt à être enregistré : " + prenom + " " + nom);
+        try {
+            // ✅ Sauvegarde en base avec le username = prenom + nom
+            repository.addUser(prenom + " " + nom, email, mdp);
+            showAlert(Alert.AlertType.INFORMATION, "Succès", "Inscription réussie pour " + prenom + " !");
+            switchToLogin(event);
 
-        showAlert("Succès", "Inscription réussie pour " + prenom);
-        switchToLogin(event);
+        } catch (SQLException e) {
+            showAlert(Alert.AlertType.ERROR, "Erreur Base de données", "Impossible de créer le compte.");
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            showAlert(Alert.AlertType.ERROR, "Erreur Pilote", "Pilote JDBC introuvable.");
+            e.printStackTrace();
+        }
     }
 
     @FXML
     private void switchToLogin(ActionEvent event) {
         try {
-            // Attention au chemin : si le FXML est dans 'presentation', on remonte d'un cran
             Parent loginRoot = FXMLLoader.load(getClass().getResource("/presentation/login.fxml"));
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             stage.setScene(new Scene(loginRoot));
@@ -60,8 +72,8 @@ public class SignUpController {
         }
     }
 
-    private void showAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+    private void showAlert(Alert.AlertType type, String title, String message) {
+        Alert alert = new Alert(type);
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);

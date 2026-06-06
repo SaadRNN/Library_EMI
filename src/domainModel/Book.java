@@ -39,7 +39,7 @@ public class Book {
         setId(id);
         setTitle(title);
         setAuthor(author);
-        this.available = true;
+        this.available = available;
     }
 
 

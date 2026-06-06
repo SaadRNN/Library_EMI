@@ -23,16 +23,14 @@ public class LoginController {
     @FXML private TextField usernameField;
     @FXML private PasswordField passwordField;
 
-    // Initialisation de la logique métier
     private final LibraryRepository repository = new LibraryRepository();
     private final UserManager userManager = new UserManager(repository);
 
     @FXML
-    private void handleLogin() {
+    private void handleLogin(ActionEvent event) {
         String username = usernameField.getText();
         String password = passwordField.getText();
 
-        // Validation des champs vides avant l'appel SQL
         if (username.isEmpty() || password.isEmpty()) {
             showErrorAlert("Champs requis", "Veuillez remplir tous les champs.");
             return;
@@ -42,11 +40,28 @@ public class LoginController {
             User authenticatedUser = userManager.validateUserCredentials(username, password);
 
             if (authenticatedUser != null) {
-                System.out.println("Bienvenue " + authenticatedUser.getUsername());
-                showSuccessAlert("Connexion réussie", "Bienvenue, rôle : " + authenticatedUser.getRole());
 
-                // Ici vous pourrez appeler une méthode pour charger le dashboard
-                // loadDashboard(authenticatedUser);
+                String fxml = authenticatedUser.getRole() == User.Role.ADMIN
+                        ? "/presentation/dashboard_admin.fxml"
+                        : "/presentation/dashboard_user.fxml";
+
+                FXMLLoader loader = new FXMLLoader(getClass().getResource(fxml));
+                Parent root = loader.load();
+
+                if (authenticatedUser.getRole() == User.Role.ADMIN) {
+                    DashboardAdminController controller = loader.getController();
+                    controller.initData(authenticatedUser);
+                } else {
+                    DashboardUserController controller = loader.getController();
+                    controller.initData(authenticatedUser);
+                }
+
+                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                stage.setScene(new Scene(root));
+                stage.setTitle("EMIBook - Dashboard");
+                stage.centerOnScreen();
+                stage.show();
+
             } else {
                 showErrorAlert("Échec de connexion", "Identifiants incorrects !");
             }
@@ -57,37 +72,29 @@ public class LoginController {
         } catch (ClassNotFoundException e) {
             showErrorAlert("Erreur Pilote", "Pilote JDBC introuvable.");
             e.printStackTrace();
+        } catch (IOException e) {
+            showErrorAlert("Erreur Navigation", "Impossible de charger le dashboard.");
+            e.printStackTrace();
         }
     }
 
     @FXML
     private void switchToSignUp(ActionEvent event) {
         try {
-            // Chargement de la vue Inscription
             Parent signUpRoot = FXMLLoader.load(getClass().getResource("/presentation/signup.fxml"));
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             stage.setScene(new Scene(signUpRoot));
             stage.setTitle("EMIBook - Inscription");
-            stage.centerOnScreen(); // Optionnel : recentrer la fenêtre
+            stage.centerOnScreen();
             stage.show();
         } catch (IOException e) {
-            System.err.println("Erreur de chargement de signup.fxml : " + e.getMessage());
             showErrorAlert("Erreur de navigation", "Impossible d'ouvrir la page d'inscription.");
+            e.printStackTrace();
         }
     }
 
-    // --- Méthodes utilitaires pour les alertes ---
-
     private void showErrorAlert(String title, String message) {
         Alert alert = new Alert(AlertType.ERROR);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-
-    private void showSuccessAlert(String title, String message) {
-        Alert alert = new Alert(AlertType.INFORMATION);
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);
