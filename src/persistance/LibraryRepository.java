@@ -317,6 +317,16 @@ public class LibraryRepository {
             pstmt.executeUpdate();
         }
     }
+    public void updateUserPassword(int userId, String newPassword) throws SQLException, ClassNotFoundException {
+        String hashedPassword = BCrypt.hashpw(newPassword, BCrypt.gensalt());
+        String sql = "UPDATE users SET password = ? WHERE id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, hashedPassword);
+            pstmt.setInt(2, userId);
+            pstmt.executeUpdate();
+        }
+    }
 }
 
 

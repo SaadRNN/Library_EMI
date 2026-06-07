@@ -103,8 +103,7 @@
                             <children>
                                 <CheckBox mnemonicParsing="false" text="Rester connecté" textFill="#64748b" style="-fx-cursor: hand;" />
                                 <Region HBox.hgrow="ALWAYS" />
-                                <Hyperlink text="Oublié ?" textFill="#007AFF" style="-fx-underline: false;" />
-                            </children>
+                                <Hyperlink onAction="#handleForgotPassword" text="Oublié ?" textFill="#007AFF" style="-fx-underline: false;" />                            </children>
                         </HBox>
 
                         <Button fx:id="loginButton" mnemonicParsing="false" onAction="#handleLogin" prefHeight="50.0" prefWidth="340.0"

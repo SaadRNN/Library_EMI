@@ -18,14 +18,13 @@
         </VBox>
         <VBox VBox.vgrow="ALWAYS" spacing="0">
             <padding><Insets top="12"/></padding>
-
             <Label text="MENU" textFill="#4a5568"><font><Font name="System Bold" size="9.0"/></font><padding><Insets bottom="4" left="18" top="12"/></padding></Label>
             <Button fx:id="btnDashboard" mnemonicParsing="false" onAction="#showDashboard" prefHeight="38.0" prefWidth="200.0" text="  Tableau de bord" style="-fx-background-color: rgba(0,122,255,0.12); -fx-text-fill: white; -fx-alignment: CENTER_LEFT; -fx-border-color: #007AFF transparent transparent transparent; -fx-border-width: 0 0 0 3; -fx-cursor: hand; -fx-font-size: 12;"/>
             <Button fx:id="btnCatalogue" mnemonicParsing="false" onAction="#showCatalogue" prefHeight="38.0" prefWidth="200.0" text="  Catalogue" style="-fx-background-color: transparent; -fx-text-fill: #7f8c8d; -fx-alignment: CENTER_LEFT; -fx-cursor: hand; -fx-font-size: 12;"/>
-
             <Label text="ADMINISTRATION" textFill="#4a5568"><font><Font name="System Bold" size="9.0"/></font><padding><Insets bottom="4" left="18" top="16"/></padding></Label>
             <Button fx:id="btnAjouterLivre" mnemonicParsing="false" onAction="#showAjouterLivre" prefHeight="38.0" prefWidth="200.0" text="  Ajouter un livre" style="-fx-background-color: transparent; -fx-text-fill: #7f8c8d; -fx-alignment: CENTER_LEFT; -fx-cursor: hand; -fx-font-size: 12;"/>
             <Button fx:id="btnGestionUsers" mnemonicParsing="false" onAction="#showGestionUsers" prefHeight="38.0" prefWidth="200.0" text="  Gestion utilisateurs" style="-fx-background-color: transparent; -fx-text-fill: #7f8c8d; -fx-alignment: CENTER_LEFT; -fx-cursor: hand; -fx-font-size: 12;"/>
+            <Button fx:id="btnGestionEmprunts" mnemonicParsing="false" onAction="#showGestionEmprunts" prefHeight="38.0" prefWidth="200.0" text="  Gestion emprunts" style="-fx-background-color: transparent; -fx-text-fill: #7f8c8d; -fx-alignment: CENTER_LEFT; -fx-cursor: hand; -fx-font-size: 12;"/>
         </VBox>
         <VBox spacing="8.0" style="-fx-border-color: rgba(255,255,255,0.08); -fx-border-width: 1 0 0 0;">
             <padding><Insets bottom="16" left="18" right="18" top="14"/></padding>
@@ -84,6 +83,7 @@
                             <Label text="Accès rapide admin" textFill="#243447"><font><Font name="System Bold" size="13.0"/></font></Label>
                             <Button mnemonicParsing="false" onAction="#showAjouterLivre" prefHeight="40.0" prefWidth="252.0" text="Gérer le catalogue" style="-fx-background-color: #243447; -fx-text-fill: white; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-size: 12; -fx-font-weight: bold;"/>
                             <Button mnemonicParsing="false" onAction="#showGestionUsers" prefHeight="40.0" prefWidth="252.0" text="Gérer les utilisateurs" style="-fx-background-color: #243447; -fx-text-fill: white; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-size: 12; -fx-font-weight: bold;"/>
+                            <Button mnemonicParsing="false" onAction="#showGestionEmprunts" prefHeight="40.0" prefWidth="252.0" text="Gérer les emprunts" style="-fx-background-color: #007AFF; -fx-text-fill: white; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-size: 12; -fx-font-weight: bold;"/>
                             <Button mnemonicParsing="false" onAction="#showCatalogue" prefHeight="40.0" prefWidth="252.0" text="Voir tout le catalogue" style="-fx-background-color: transparent; -fx-text-fill: #243447; -fx-border-color: #e2e8f0; -fx-border-radius: 8; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-size: 12;"/>
                         </VBox>
                     </HBox>
@@ -110,7 +110,6 @@
             <ScrollPane fx:id="paneAjouterLivre" fitToWidth="true" visible="false" style="-fx-background-color: transparent; -fx-background: transparent;">
                 <VBox spacing="16.0"><padding><Insets bottom="20" left="24" right="24" top="20"/></padding>
                     <HBox spacing="16.0">
-                        <!-- Formulaire ajout -->
                         <VBox prefWidth="340.0" spacing="14.0" style="-fx-background-color: white; -fx-background-radius: 8; -fx-border-color: #e2e8f0; -fx-border-radius: 8; -fx-border-width: 0.5;"><padding><Insets bottom="20" left="20" right="20" top="20"/></padding>
                             <Label text="Ajouter un livre" textFill="#243447"><font><Font name="System Bold" size="15.0"/></font></Label>
                             <Label text="Le livre sera ajouté comme disponible." textFill="#94a3b8"><font><Font size="12.0"/></font></Label>
@@ -124,8 +123,6 @@
                             </VBox>
                             <Button mnemonicParsing="false" onAction="#handleAjouterLivre" prefHeight="44.0" prefWidth="300.0" text="Ajouter au catalogue" style="-fx-background-color: #007AFF; -fx-text-fill: white; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-size: 13; -fx-font-weight: bold;"><VBox.margin><Insets top="6"/></VBox.margin></Button>
                         </VBox>
-
-                        <!-- Liste livres -->
                         <VBox HBox.hgrow="ALWAYS" spacing="10.0" style="-fx-background-color: white; -fx-background-radius: 8; -fx-border-color: #e2e8f0; -fx-border-radius: 8; -fx-border-width: 0.5;"><padding><Insets bottom="16" left="16" right="16" top="16"/></padding>
                             <Label text="Catalogue actuel" textFill="#243447"><font><Font name="System Bold" size="13.0"/></font></Label>
                             <TableView fx:id="tableAdmin" prefHeight="380.0">
@@ -156,7 +153,31 @@
                                 <TableColumn fx:id="uColNom" prefWidth="160.0" text="NOM"/>
                                 <TableColumn fx:id="uColEmail" prefWidth="200.0" text="EMAIL"/>
                                 <TableColumn fx:id="uColRole" prefWidth="90.0" text="RÔLE"/>
-                                <TableColumn fx:id="uColAction" prefWidth="140.0" text="CHANGER RÔLE"/>
+                                <TableColumn fx:id="uColAction" prefWidth="200.0" text="ACTIONS"/>
+                            </columns>
+                        </TableView>
+                    </VBox>
+                </VBox>
+            </ScrollPane>
+
+            <!-- PAGE GESTION EMPRUNTS -->
+            <ScrollPane fx:id="paneGestionEmprunts" fitToWidth="true" visible="false" style="-fx-background-color: transparent; -fx-background: transparent;">
+                <VBox spacing="12.0"><padding><Insets bottom="20" left="24" right="24" top="20"/></padding>
+                    <VBox style="-fx-background-color: white; -fx-background-radius: 8; -fx-border-color: #e2e8f0; -fx-border-radius: 8; -fx-border-width: 0.5;"><padding><Insets bottom="16" left="16" right="16" top="16"/></padding>
+                        <HBox alignment="CENTER_LEFT"><padding><Insets bottom="12"/></padding>
+                            <Label text="Gestion des emprunts" textFill="#243447"><font><Font name="System Bold" size="13.0"/></font></Label>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Label text="ADMIN ONLY" textFill="white" style="-fx-background-color: #243447; -fx-background-radius: 20; -fx-padding: 3 10 3 10;"><font><Font name="System Bold" size="9.0"/></font></Label>
+                        </HBox>
+                        <TableView fx:id="tableEmprunts" prefHeight="420.0">
+                            <columns>
+                                <TableColumn fx:id="eColId" prefWidth="50.0" text="ID"/>
+                                <TableColumn fx:id="eColUser" prefWidth="140.0" text="UTILISATEUR"/>
+                                <TableColumn fx:id="eColLivre" prefWidth="160.0" text="LIVRE"/>
+                                <TableColumn fx:id="eColDateEmprunt" prefWidth="110.0" text="EMPRUNTÉ LE"/>
+                                <TableColumn fx:id="eColEcheance" prefWidth="110.0" text="ÉCHÉANCE"/>
+                                <TableColumn fx:id="eColStatut" prefWidth="100.0" text="STATUT"/>
+                                <TableColumn fx:id="eColAmende" prefWidth="90.0" text="AMENDE"/>
                             </columns>
                         </TableView>
                     </VBox>

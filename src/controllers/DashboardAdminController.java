@@ -25,34 +25,24 @@ import java.util.stream.Collectors;
 
 public class DashboardAdminController {
 
-    // ===== SIDEBAR =====
     @FXML private Label sidebarUsername;
     @FXML private Label avatarLabel;
     @FXML private Label pageTitle;
-
-    // ===== STATS =====
     @FXML private Label statTotalLivres;
     @FXML private Label statDisponibles;
     @FXML private Label statEmpruntsActifs;
     @FXML private Label statUsers;
-
-    // ===== LISTE DASHBOARD =====
     @FXML private ListView<String> listLivres;
-
-    // ===== PAGES =====
     @FXML private ScrollPane paneDashboard;
     @FXML private ScrollPane paneCatalogue;
     @FXML private ScrollPane paneAjouterLivre;
     @FXML private ScrollPane paneGestionUsers;
-
-    // ===== TABLE CATALOGUE =====
+    @FXML private ScrollPane paneGestionEmprunts; // ← nouveau
     @FXML private TableView<Book> tableCatalogue;
     @FXML private TableColumn<Book, String> colId;
     @FXML private TableColumn<Book, String> colTitre;
     @FXML private TableColumn<Book, String> colAuteur;
     @FXML private TableColumn<Book, String> colDispo;
-
-    // ===== FORMULAIRE AJOUT LIVRE =====
     @FXML private TextField fieldTitre;
     @FXML private TextField fieldAuteur;
     @FXML private TableView<Book> tableAdmin;
@@ -60,70 +50,64 @@ public class DashboardAdminController {
     @FXML private TableColumn<Book, String> aColTitre;
     @FXML private TableColumn<Book, String> aColAuteur;
     @FXML private TableColumn<Book, String> aColDispo;
-
-    // ===== TABLE USERS =====
     @FXML private TableView<User> tableUsers;
     @FXML private TableColumn<User, String> uColId;
     @FXML private TableColumn<User, String> uColNom;
     @FXML private TableColumn<User, String> uColEmail;
     @FXML private TableColumn<User, String> uColRole;
     @FXML private TableColumn<User, String> uColAction;
-
-    // ===== SEARCH =====
+    @FXML private TableView<Loan> tableEmprunts; // ← nouveau
+    @FXML private TableColumn<Loan, String> eColId; // ← nouveau
+    @FXML private TableColumn<Loan, String> eColUser; // ← nouveau
+    @FXML private TableColumn<Loan, String> eColLivre; // ← nouveau
+    @FXML private TableColumn<Loan, String> eColDateEmprunt; // ← nouveau
+    @FXML private TableColumn<Loan, String> eColEcheance; // ← nouveau
+    @FXML private TableColumn<Loan, String> eColStatut; // ← nouveau
+    @FXML private TableColumn<Loan, String> eColAmende; // ← nouveau
     @FXML private TextField searchField;
 
-    // ===== LOGIQUE METIER =====
     private final LibraryRepository repository = new LibraryRepository();
     private final BookManager bookManager = new BookManager(repository);
     private final UserManager userManager = new UserManager(repository);
     private final LoanManager loanManager = new LoanManager(repository, userManager);
-
     private User currentUser;
 
-    // ===== INITIALISATION =====
     public void initData(User user) {
         this.currentUser = user;
-
         sidebarUsername.setText(user.getUsername());
         String initiales = user.getUsername().length() >= 2
                 ? user.getUsername().substring(0, 2).toUpperCase()
                 : user.getUsername().toUpperCase();
         avatarLabel.setText(initiales);
-
         loadStats();
         loadDashboardList();
         setupCatalogueTable();
         setupAdminTable();
         setupUsersTable();
+        setupEmpruntsTable(); // ← nouveau
     }
 
-    // ===== STATS =====
     private void loadStats() {
         try {
             List<Book> allBooks = bookManager.getAllBooks();
             long disponibles = allBooks.stream().filter(Book::isAvailable).count();
             List<Loan> allLoans = loanManager.getAllLoans(currentUser);
-            long empruntsActifs = allLoans.stream()
-                    .filter(l -> l.getReturnDate() == null).count();
+            long empruntsActifs = allLoans.stream().filter(l -> l.getReturnDate() == null).count();
             List<User> allUsers = userManager.getAllUsers();
-
             statTotalLivres.setText(String.valueOf(allBooks.size()));
             statDisponibles.setText(String.valueOf(disponibles));
             statEmpruntsActifs.setText(String.valueOf(empruntsActifs));
             statUsers.setText(String.valueOf(allUsers.size()));
-
         } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
         }
     }
 
-    // ===== LISTE DASHBOARD =====
     private void loadDashboardList() {
         try {
             List<Book> books = bookManager.getAllBooks();
             List<String> booksStr = books.stream()
-                    .map(b -> (b.isAvailable() ? "✓ " : "✗ ")
-                            + b.getTitle() + " — " + b.getAuthor())
+                    .map(b -> (b.isAvailable() ? "✓ " : "✗ ") + b.getTitle() + " — " + b.getAuthor())
                     .collect(Collectors.toList());
             listLivres.setItems(FXCollections.observableArrayList(booksStr));
         } catch (SQLException | ClassNotFoundException e) {
@@ -131,7 +115,6 @@ public class DashboardAdminController {
         }
     }
 
-    // ===== TABLE CATALOGUE =====
     private void setupCatalogueTable() {
         colId.setCellValueFactory(c -> new SimpleStringProperty(String.valueOf(c.getValue().getId())));
         colTitre.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getTitle()));
@@ -157,7 +140,6 @@ public class DashboardAdminController {
         }
     }
 
-    // ===== TABLE ADMIN (AJOUTER LIVRE) =====
     private void setupAdminTable() {
         aColId.setCellValueFactory(c -> new SimpleStringProperty(String.valueOf(c.getValue().getId())));
         aColTitre.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getTitle()));
@@ -176,28 +158,30 @@ public class DashboardAdminController {
         }
     }
 
-    // ===== TABLE USERS =====
     private void setupUsersTable() {
         uColId.setCellValueFactory(c -> new SimpleStringProperty(String.valueOf(c.getValue().getId())));
         uColNom.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getUsername()));
         uColEmail.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getEmail()));
         uColRole.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getRole().name()));
 
-        // Colonne actions : Promouvoir ADMIN + Supprimer
         uColAction.setCellFactory(col -> new TableCell<>() {
             private final Button btnRole = new Button("→ ADMIN");
+            private final Button btnMdp = new Button("Changer MDP");
             private final Button btnSupp = new Button("Supprimer");
             private final javafx.scene.layout.HBox box =
-                    new javafx.scene.layout.HBox(6, btnRole, btnSupp);
+                    new javafx.scene.layout.HBox(6, btnRole, btnMdp, btnSupp);
             {
-                btnRole.setStyle("-fx-background-color: #243447; -fx-text-fill: white; " +
-                        "-fx-background-radius: 6; -fx-font-size: 10; -fx-cursor: hand;");
-                btnSupp.setStyle("-fx-background-color: #FCEBEB; -fx-text-fill: #A32D2D; " +
-                        "-fx-background-radius: 6; -fx-font-size: 10; -fx-cursor: hand;");
+                btnRole.setStyle("-fx-background-color: #243447; -fx-text-fill: white; -fx-background-radius: 6; -fx-font-size: 10; -fx-cursor: hand;");
+                btnMdp.setStyle("-fx-background-color: #E6F1FB; -fx-text-fill: #185FA5; -fx-background-radius: 6; -fx-font-size: 10; -fx-cursor: hand;");
+                btnSupp.setStyle("-fx-background-color: #FCEBEB; -fx-text-fill: #A32D2D; -fx-background-radius: 6; -fx-font-size: 10; -fx-cursor: hand;");
 
                 btnRole.setOnAction(e -> {
                     User target = getTableView().getItems().get(getIndex());
                     handleChangerRole(target);
+                });
+                btnMdp.setOnAction(e -> {
+                    User target = getTableView().getItems().get(getIndex());
+                    handleChangerMotDePasse(target);
                 });
                 btnSupp.setOnAction(e -> {
                     User target = getTableView().getItems().get(getIndex());
@@ -210,9 +194,7 @@ public class DashboardAdminController {
                 super.updateItem(item, empty);
                 if (empty) { setGraphic(null); return; }
                 User target = getTableView().getItems().get(getIndex());
-                // Cacher le bouton ADMIN si l'utilisateur est déjà ADMIN
                 btnRole.setVisible(target.getRole() != User.Role.ADMIN);
-                // Empêcher de se supprimer soi-même
                 btnSupp.setDisable(target.getId() == currentUser.getId());
                 setGraphic(box);
             }
@@ -230,17 +212,42 @@ public class DashboardAdminController {
         }
     }
 
+    // ===== GESTION EMPRUNTS =====
+    private void setupEmpruntsTable() {
+        eColId.setCellValueFactory(c -> new SimpleStringProperty(String.valueOf(c.getValue().getId())));
+        eColUser.setCellValueFactory(c -> new SimpleStringProperty(
+                c.getValue().getUser() != null ? c.getValue().getUser().getUsername() : "—"));
+        eColLivre.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getBook().getTitle()));
+        eColDateEmprunt.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getLoanDate().toString()));
+        eColEcheance.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getDueDate().toString()));
+        eColStatut.setCellValueFactory(c -> new SimpleStringProperty(
+                c.getValue().getReturnDate() != null ? "✓ Rendu" :
+                        c.getValue().isOverdue() ? "⚠ En retard" : "En cours"));
+        eColAmende.setCellValueFactory(c -> new SimpleStringProperty(
+                c.getValue().calculateFine() > 0
+                        ? (int) c.getValue().calculateFine() + " DH"
+                        : "0 DH"));
+        loadEmpruntsData();
+    }
+
+    private void loadEmpruntsData() {
+        try {
+            List<Loan> loans = loanManager.getAllLoans(currentUser);
+            tableEmprunts.setItems(FXCollections.observableArrayList(loans));
+        } catch (SQLException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
     // ===== ACTIONS =====
     @FXML
     private void handleAjouterLivre() {
         String titre = fieldTitre.getText().trim();
         String auteur = fieldAuteur.getText().trim();
-
         if (titre.isEmpty() || auteur.isEmpty()) {
             showAlert(Alert.AlertType.ERROR, "Champs vides", "Veuillez remplir le titre et l'auteur.");
             return;
         }
-
         try {
             bookManager.addBook(currentUser, titre, auteur);
             showAlert(Alert.AlertType.INFORMATION, "Succès", "\"" + titre + "\" ajouté au catalogue !");
@@ -256,11 +263,9 @@ public class DashboardAdminController {
 
     private void handleChangerRole(User target) {
         if (target.getRole() == User.Role.ADMIN) {
-            showAlert(Alert.AlertType.INFORMATION, "Info",
-                    target.getUsername() + " est déjà administrateur.");
+            showAlert(Alert.AlertType.INFORMATION, "Info", target.getUsername() + " est déjà administrateur.");
             return;
         }
-
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
         confirm.setTitle("Changer le rôle");
         confirm.setHeaderText(null);
@@ -269,14 +274,29 @@ public class DashboardAdminController {
             if (response == ButtonType.OK) {
                 try {
                     userManager.changerUserRole(currentUser, target.getId(), User.Role.ADMIN);
-                    showAlert(Alert.AlertType.INFORMATION, "Succès",
-                            target.getUsername() + " est maintenant ADMIN.");
+                    showAlert(Alert.AlertType.INFORMATION, "Succès", target.getUsername() + " est maintenant ADMIN.");
                     loadUsersData();
                 } catch (Exception e) {
                     showAlert(Alert.AlertType.ERROR, "Erreur", e.getMessage());
                 }
             }
         });
+    }
+
+    private void handleChangerMotDePasse(User target) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/presentation/change_password.fxml"));
+            Parent root = loader.load();
+            ChangePasswordController controller = loader.getController();
+            controller.initData(currentUser, target);
+            Stage stage = (Stage) listLivres.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("EMIBook - Changer mot de passe");
+            stage.centerOnScreen();
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void handleSupprimerUser(User target) {
@@ -288,8 +308,7 @@ public class DashboardAdminController {
             if (response == ButtonType.OK) {
                 try {
                     userManager.deleteUser(currentUser, target.getId());
-                    showAlert(Alert.AlertType.INFORMATION, "Succès",
-                            "Utilisateur supprimé.");
+                    showAlert(Alert.AlertType.INFORMATION, "Succès", "Utilisateur supprimé.");
                     loadUsersData();
                     loadStats();
                 } catch (Exception e) {
@@ -306,6 +325,7 @@ public class DashboardAdminController {
         paneCatalogue.setVisible(false);
         paneAjouterLivre.setVisible(false);
         paneGestionUsers.setVisible(false);
+        paneGestionEmprunts.setVisible(false);
         loadDashboardList();
         loadStats();
     }
@@ -316,6 +336,7 @@ public class DashboardAdminController {
         paneCatalogue.setVisible(true);
         paneAjouterLivre.setVisible(false);
         paneGestionUsers.setVisible(false);
+        paneGestionEmprunts.setVisible(false);
         loadCatalogueData();
     }
 
@@ -325,6 +346,7 @@ public class DashboardAdminController {
         paneCatalogue.setVisible(false);
         paneAjouterLivre.setVisible(true);
         paneGestionUsers.setVisible(false);
+        paneGestionEmprunts.setVisible(false);
         loadAdminTableData();
     }
 
@@ -334,7 +356,18 @@ public class DashboardAdminController {
         paneCatalogue.setVisible(false);
         paneAjouterLivre.setVisible(false);
         paneGestionUsers.setVisible(true);
+        paneGestionEmprunts.setVisible(false);
         loadUsersData();
+    }
+
+    @FXML private void showGestionEmprunts() {
+        pageTitle.setText("Gestion des emprunts");
+        paneDashboard.setVisible(false);
+        paneCatalogue.setVisible(false);
+        paneAjouterLivre.setVisible(false);
+        paneGestionUsers.setVisible(false);
+        paneGestionEmprunts.setVisible(true);
+        loadEmpruntsData();
     }
 
     @FXML private void handleSearch() {

@@ -77,7 +77,19 @@ public class LoginController {
             e.printStackTrace();
         }
     }
-
+    @FXML
+    private void handleForgotPassword(ActionEvent event) {
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource("/presentation/forgot_password.fxml"));
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("EMIBook - Mot de passe oublié");
+            stage.centerOnScreen();
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     @FXML
     private void switchToSignUp(ActionEvent event) {
         try {
